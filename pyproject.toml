@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "bubbles"
+version = "0.1.0"
+description = ""
+authors = ["Yuri Baburov <burchik@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "*"
+skorch = "^0.2.0"
+torch = "^0.4.0"
+cffi = "^1.11"
+torchaudio = { git = "https://github.com/pytorch/audio.git", branch = "master" }
+dlib = "^19.10"
+opencv-contrib-python = "^3.4"
+jupyter = "^1.0"
+django = "^2.0"
+imutils = "^0.4.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.5"
