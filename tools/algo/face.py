@@ -1,21 +1,17 @@
 # import the necessary packages
-from imutils.video import VideoStream
-from imutils import face_utils
-import imutils
-import dlib
 import cv2
-import numpy
-clip = numpy.clip
+import dlib
+from imutils import face_utils
+
+from utils.detecting import clip, dlib_c_rect
 
 SHAPE_PREDICTOR_PATH = 'data/dlib/shape_predictor_68_face_landmarks.dat'
-FACE_RECOGNITION_PATH = 'data/dlib/dlib_face_recognition_resnet_model_v1.dat'
+# FACE_RECOGNITION_PATH = 'data/dlib/dlib_face_recognition_resnet_model_v1.dat'
 
-# initialize dlib's face dlib_find_faces (HOG-based) and then create
-# the facial landmark dlib_face_landmarks
+# the facial landmark dlib_face_landmarks, only used with HOG face detector
 print("[INFO] loading facial landmark dlib_face_landmarks...")
-dlib_find_faces = dlib.get_frontal_face_detector()
 dlib_face_landmarks = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
-facerec = dlib.face_recognition_model_v1(FACE_RECOGNITION_PATH)
+# facerec = dlib.face_recognition_model_v1(FACE_RECOGNITION_PATH)
 
 
 def center(rect):
@@ -36,14 +32,11 @@ def near(rect1, rect2, q):
     return abs(cx1 - cx2) * q < sx and abs(cy1 - cy2) * q < sy
 
 
-def dlib_c_rect(r):
-    return dlib.rectangle(*map(int, [r.left(), r.top(), r.right(), r.bottom()]))
-
-
 uid = 1
 MAX_FADE = 100
 
-class PersonFrame:
+
+class Face:
 
     def __init__(self, frame, rect):
         global uid
@@ -89,37 +82,16 @@ class PersonFrame:
         (x, y, w, h) = face_utils.rect_to_bb(rect)
         # convert dlib's rectangle to a OpenCV-style bounding box
         # [i.e., (x, y, w, h)], then draw the face bounding box
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
      
         # show the face number
         s = "Face #{} fade={}".format(self.uid + 1, int(self.fade))
         cv2.putText(frame, s, (x - 10, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        # loop over the (x, y)-coordinates for the facial landmarks
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        # loop over the (x, y)-coordinates for the facial camreader
         # and draw them on the image
         shape = dlib_face_landmarks(frame, rect)
         shape = face_utils.shape_to_np(shape)
         
         for (x, y) in shape:
             cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
-
-
-class Tracker(object):
-    def __init__(self):
-        self.people = []
-        
-    def update(self, frame):
-        faces = dlib_find_faces(frame, 0)
-        
-        for p in self.people:
-            m = p.match_faces(faces)
-            if m >= 0:
-                rect = faces.pop(m)
-                p.update_from_rect(frame, rect)
-            else:
-                p.update_from_pic(frame)
-                
-        self.people = [p for p in self.people if p.fade > 0]
-    
-        for rect in faces:
-            self.people.append(PersonFrame(frame, rect))
