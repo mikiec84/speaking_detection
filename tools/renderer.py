@@ -57,5 +57,8 @@ def render(source):
     
 
 if __name__ == '__main__':
-    render(0)
-    render('data/lilir/twotalk/clip_25hCrqBFGn.avi')
+    if sys.argv[1:]:
+        render(sys.argv[1]) # 'data/lilir/twotalk/clip_25hCrqBFGn.avi'
+    else:
+        #webcam
+        render(0)
