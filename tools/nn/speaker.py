@@ -1,53 +1,16 @@
-import os.path
+import os
 
 import skimage.io
 from torch.nn import Module
 import torch.nn
-import tqdm
 from torchvision.models import resnet18
+from nn.speaker_dataset import Dataset  # @UnusedImport
 
 os.environ['TORCH_MODEL_ZOO'] = '../data/'
 
 VIDTIMIT_PATH = '../data/vidtimit/'
 
 skimage.io.use_plugin('pil')
-
-
-class Dataset:
-
-    def __init__(self, root, transform=None, include=None, exclude=[]):
-        self.transform = transform
-        self.images = {}
-        tq = tqdm.tqdm()
-        self.c = {0:0, 1: 0}
-        self.items = []
-        for author in os.listdir(root):
-            if author in exclude: continue
-            if include and not author in include: continue
-            vpath = os.path.join(root, author, 'video')
-            for sentence in os.listdir(vpath):
-                cls = 0 if sentence.startswith('head') else 1
-                for seq in os.listdir(vpath + '/' + sentence):
-                    fn = os.path.join(vpath, sentence, seq)
-                    self.items.append((fn, cls))
-                    self.c[cls] += 1
-                    tq.update(1)
-
-    def __len__(self):
-        return len(self.items)
-                    
-    def __getitem__(self, index):
-        fn, label = self.items[index]
-        # print(fn, label)
-        if fn in self.images:
-            img = self.images[fn]
-        else:
-            img = skimage.io.imread(fn)
-            # self.images[fn] = img
-        # print(img.shape, type(img))
-        if self.transform:
-            img = self.transform(img)
-        return (img, label)
 
 
 class Net(Module):
@@ -71,12 +34,14 @@ class Net(Module):
         y = self.classifier(f)
         return y
 
+
 def get_speaking_detector_final():
     m = torch.load('../data/speaker.pt')
-    m=m.eval();
+    m = m.eval();
     return m
+
 
 def get_speaking_detector(e):
     m = torch.load('../data/speaker/model.e{}.pt'.format(e))
-    m=m.eval();
+    m = m.eval();
     return m

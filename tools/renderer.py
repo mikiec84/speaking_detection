@@ -15,14 +15,19 @@ def render(source):
         if not vs.stream.isOpened():
             print("File couldn't be opened")
             sys.exit()
+        video_fps = vs.stream.get(cv2.CAP_PROP_FPS)
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        ofn = '../data/output/{}'.format(sys.argv[1].split('/')[-1].replace('clip_', 'output_'))
+        out = cv2.VideoWriter(ofn, fourcc, video_fps, (640, 512))
     else:
         vs = WebcamVideoStream().start()
+        out = None
     # If Camera Device is not opened, exit the program
     # loop over the frames from the video stream
 
     cv2.startWindowThread()
     cv2.namedWindow('Movie', cv2.WINDOW_NORMAL)
-    cv2.resizeWindow('Movie', 640, 480)
+    cv2.resizeWindow('Movie', 640+60, 480+60)
     cv2.moveWindow('Movie', 1920 + 1400, 600)
 
     p = Processor()
@@ -35,11 +40,14 @@ def render(source):
         if frame is None:
             break
         #print("Read:", frame.shape)
-        frame = imutils.resize(frame, width=480)
+        frame = imutils.resize(frame, width=640)
         
         p.update(frame)        
         # show the frame
+        #print(frame.shape)
         cv2.imshow("Movie", frame)
+        if out:
+            out.write(frame)
 
         key = cv2.waitKey(1) & 0xFF
      
@@ -50,6 +58,9 @@ def render(source):
     print("Finished")
     vs.stop()
     vs.stream.release()
+    
+    if out:
+        out.release()
     
     p.finish()
     # do a bit of cleanup
