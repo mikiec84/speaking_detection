@@ -18,3 +18,5 @@ Video file sample run:
 cd tools
 DEVICE=cuda DEVICE_ID=1 ../.venv/bin/python renderer.py ../data/lilir/twotalk/clip_PFq3PGRUSo.avi
 
+
+Project sample output can be seen in the data/output folder
