@@ -1,0 +1,20 @@
+This project uses a neural network for Visual Speaking detection based on VIDTIMIT model.
+
+To install the project:
+sudo -H pip install poetry
+make setup
+poetry install .
+
+To build the neural network model:
+Use notebooks tools/speaker.ipynb and tools/speaker2.ipynb
+
+To run with the webcam capture:
+
+cd tools
+../.venv/bin/python renderer.py
+
+Video file sample run:
+
+cd tools
+DEVICE=cuda DEVICE_ID=1 ../.venv/bin/python renderer.py ../data/lilir/twotalk/clip_PFq3PGRUSo.avi
+
