@@ -5,12 +5,12 @@ from imutils import face_utils
 
 from utils.detecting import clip, dlib_c_rect
 
-SHAPE_PREDICTOR_PATH = 'data/dlib/shape_predictor_68_face_landmarks.dat'
+#SHAPE_PREDICTOR_PATH = 'data/dlib/shape_predictor_68_face_landmarks.dat'
 # FACE_RECOGNITION_PATH = 'data/dlib/dlib_face_recognition_resnet_model_v1.dat'
 
 # the facial landmark dlib_face_landmarks, only used with HOG face detector
-print("[INFO] loading facial landmark dlib_face_landmarks...")
-dlib_face_landmarks = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
+#print("[INFO] loading facial landmark dlib_face_landmarks...")
+#dlib_face_landmarks = dlib.shape_predictor(SHAPE_PREDICTOR_PATH)
 # facerec = dlib.face_recognition_model_v1(FACE_RECOGNITION_PATH)
 
 
@@ -48,6 +48,7 @@ class Face:
         # face_descriptor = facerec.compute_face_descriptor(img, shape)
         self.fade = MAX_FADE
         self.uid = uid
+        self.speaking = False
         uid += 1
 
     def update_from_pic(self, frame):
@@ -77,6 +78,12 @@ class Face:
         
         return -1
     
+    def get_image(self, frame):
+        rect = dlib_c_rect(self.predicted_rect)
+        (x, y, w, h) = face_utils.rect_to_bb(rect)
+        print(frame.shape)
+        return frame[y:y+h, x:x+w,:]
+    
     def draw(self, frame):
         rect = dlib_c_rect(self.predicted_rect)
         (x, y, w, h) = face_utils.rect_to_bb(rect)
@@ -86,12 +93,14 @@ class Face:
      
         # show the face number
         s = "Face #{} fade={}".format(self.uid + 1, int(self.fade))
+        if self.speaking:
+            s += " SPEAKING"
         cv2.putText(frame, s, (x - 10, y - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
         # loop over the (x, y)-coordinates for the facial camreader
         # and draw them on the image
-        shape = dlib_face_landmarks(frame, rect)
-        shape = face_utils.shape_to_np(shape)
+        #shape = dlib_face_landmarks(frame, rect)
+        #shape = face_utils.shape_to_np(shape)
         
-        for (x, y) in shape:
-            cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
+        #for (x, y) in shape:
+        #    cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)

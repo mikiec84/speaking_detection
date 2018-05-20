@@ -6,7 +6,6 @@ import imutils
 from imutils.video.webcamvideostream import WebcamVideoStream
 from utils.fvs import FileVideoStream
 
-
 # one don't talk then one talks:
 # data/lilir/twotalk/clip_2thWiYmVlo.avi
 def render(source):
@@ -55,7 +54,6 @@ def render(source):
     p.finish()
     # do a bit of cleanup
     cv2.destroyWindow("Movie")
-    
     
 
 if __name__ == '__main__':

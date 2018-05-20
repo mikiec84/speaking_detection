@@ -71,6 +71,12 @@ class Net(Module):
         y = self.classifier(f)
         return y
 
+def get_speaking_detector_final():
+    m = torch.load('../data/speaker.pt')
+    m=m.eval();
+    return m
 
 def get_speaking_detector(e):
-    return torch.load('../data/speaker/model.e{}.pt'.format(e))
+    m = torch.load('../data/speaker/model.e{}.pt'.format(e))
+    m=m.eval();
+    return m
