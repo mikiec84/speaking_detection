@@ -1,3 +1,5 @@
 .venv
 pyproject.lock
 __pycache__/
+*.pt
+.ipynb_checkpoints/
